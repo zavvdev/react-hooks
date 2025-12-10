@@ -3,12 +3,18 @@ import { useEffect } from "react";
 export function useClickOutside<T extends HTMLElement>(
   reference: React.RefObject<T | null>,
   handler: (event: MouseEvent | TouchEvent) => void,
+  exceptions: Array<React.RefObject<HTMLElement | null>> = [],
 ) {
   useEffect(() => {
     var listener = (event: MouseEvent | TouchEvent) => {
       if (
         !reference.current ||
-        reference.current?.contains?.(event.target as Node)
+        reference.current?.contains?.(event.target as Node) ||
+        exceptions.some(
+          (exception) =>
+            exception.current &&
+            exception.current.contains?.(event.target as Node),
+        )
       ) {
         return;
       }
